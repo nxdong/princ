@@ -55,6 +55,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -99,8 +101,12 @@
     <None Include="res\Princ.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Buffer.h" />
     <ClInclude Include="FileDlg.h" />
+    <ClInclude Include="iocpMapper.h" />
+    <ClInclude Include="IOCPServer.h" />
     <ClInclude Include="ListDlg.h" />
+    <ClInclude Include="MyListCtrl.h" />
     <ClInclude Include="MyTabCtrl.h" />
     <ClInclude Include="Princ.h" />
     <ClInclude Include="PrincDlg.h" />
@@ -110,8 +116,11 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="FileDlg.cpp" />
+    <ClCompile Include="IOCPServer.cpp" />
     <ClCompile Include="ListDlg.cpp" />
+    <ClCompile Include="MyListCtrl.cpp" />
     <ClCompile Include="MyTabCtrl.cpp" />
     <ClCompile Include="Princ.cpp" />
     <ClCompile Include="PrincDlg.cpp" />

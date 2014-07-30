@@ -3,10 +3,12 @@
 //
 
 #pragma once
+#include "stdafx.h"
+#include "resource.h"
 #include "mytabctrl.h"
-#include "FileDlg.h"
 #include "ListDlg.h"
 #include "ShellDlg.h"
+#include "FileDlg.h"
 
 // CPrincDlg ¶Ô»°¿ò
 class CPrincDlg : public CDialogEx
