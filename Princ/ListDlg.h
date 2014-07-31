@@ -12,6 +12,7 @@ public:
 	ListDlg(CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~ListDlg();
 	MyListCtrl m_cListCtrl;
+	int m_ComputerCount;
 // 对话框数据
 	enum { IDD = IDD_LISTDLG };
 
@@ -22,4 +23,5 @@ protected:
 public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg LRESULT OnAddToList(WPARAM, LPARAM);
 };

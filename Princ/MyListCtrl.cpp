@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "MyListCtrl.h"
-
+#include "IOCPServer.h"
 typedef struct
 {
 	CString	title;
@@ -66,12 +66,8 @@ BOOL MyListCtrl::changeWidth(void)
 	}
 	return TRUE;
 }
-BOOL MyListCtrl::AddToList(LOGININFO loginfo)
+BOOL MyListCtrl::AddToList(LOGININFO* loginfo)
 {
 	m_nItemCount++;
-	return TRUE;
-}
-BOOL MyListCtrl::AAAAAA(ClientContext* aaa)
-{
 	return TRUE;
 }

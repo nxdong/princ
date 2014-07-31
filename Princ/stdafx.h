@@ -37,20 +37,7 @@
 
 #include <afxcontrolbars.h>     // 功能区和控件条的 MFC 支持
 
-typedef struct
-{	
-	BYTE			bToken;				// = 1		
-	OSVERSIONINFOEX	OsVerInfoEx;	// 版本信息
- 	int				CPUClockMhz;	// CPU主频
-	IN_ADDR			IPAddress;		// 存储32位的IPv4的地址数据结构
-	char			HostName[50];	// 主机名
-	bool			bIsWebCam;		// 是否有摄像头
- 	DWORD			dwSpeed;		// 网速
-}LOGININFO;
-
-
 #include "IOCPServer.h"
-
 
 
 
