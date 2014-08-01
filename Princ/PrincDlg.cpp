@@ -10,8 +10,8 @@
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-
-
+CIOCPServer *m_iocpServer = NULL;
+ListDlg* g_pListDlg = NULL; //在NotifyProc中初始化
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
 class CAboutDlg : public CDialogEx
@@ -122,10 +122,7 @@ BOOL CPrincDlg::OnInitDialog()
 		tabRect.Width(), tabRect.Height(),SWP_HIDEWINDOW);
 	m_FileDlg.SetWindowPos(NULL,tabRect.left, tabRect.top,
 		tabRect.Width(), tabRect.Height(),SWP_HIDEWINDOW);
-// 	CRect mainDlgRect;
-// 	GetClientRect(&mainDlgRect);
-// 	m_cTabCtrl.AdjustRect(FALSE, &mainDlgRect);
-// 	m_cTabCtrl.MoveWindow(&mainDlgRect, TRUE);   
+	Activate(9527,100);
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -205,8 +202,6 @@ void CPrincDlg::OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult)
 		break;
 	}
 }
-
-
 void CPrincDlg::OnSize(UINT nType, int cx, int cy)
 {
 	CDialogEx::OnSize(nType, cx, cy);
@@ -226,4 +221,72 @@ void CPrincDlg::OnSize(UINT nType, int cx, int cy)
 	m_ListDlg.MoveWindow(tabRect);
 	m_ShellDlg.MoveWindow(tabRect);
 	m_FileDlg.MoveWindow(tabRect);
+}
+void CALLBACK CPrincDlg::NotifyProc(LPVOID lpParam, ClientContext *pContext, UINT nCode)
+{
+	try
+	{
+		CPrincDlg* pPriDlg = (CPrincDlg*) lpParam;
+		pPriDlg->m_ServerPrincDlg = m_iocpServer;
+		// 对g_pListDlg 进行初始化
+		switch (nCode)
+		{
+		case NC_CLIENT_CONNECT:
+			break;
+		case NC_CLIENT_DISCONNECT:
+			pPriDlg->PostMessage(WM_REMOVEFROMLIST, 0, (LPARAM)pContext);
+			break;
+		case NC_TRANSMIT:
+			break;
+		case NC_RECEIVE:
+			ProcessReceive(pContext);
+			break;
+		case NC_RECEIVE_COMPLETE:
+			ProcessReceiveComplete(pContext);
+			break;
+		}
+	}catch(...){}
+}
+
+void CPrincDlg::Activate(UINT nPort, UINT nMaxConnections)
+{
+	CString		str;
+	if (m_iocpServer != NULL)
+	{
+		m_iocpServer->Shutdown();
+		delete m_iocpServer;
+	}
+	m_iocpServer = new CIOCPServer;
+	// 开启IPCP服务器
+	if (m_iocpServer->Initialize(NotifyProc, this, 100000, nPort))
+	{
+		char hostname[256]; 
+		gethostname(hostname, sizeof(hostname));
+		HOSTENT *host = gethostbyname(hostname);
+		if (host != NULL)
+		{ 
+			for ( int i=0; ; i++ )
+			{ 
+				str += inet_ntoa(*(IN_ADDR*)host->h_addr_list[i]);
+				if ( host->h_addr_list[i] + host->h_length >= host->h_name )
+					break;
+				str += "/";
+			}
+		}
+	}
+	else
+	{
+		AfxMessageBox(_T("端口%d绑定失败"));
+	}
+}
+
+void CPrincDlg::ProcessReceive(ClientContext *pContext)
+{
+
+
+}
+
+void CPrincDlg::ProcessReceiveComplete(ClientContext *pContext)
+{
+
 }

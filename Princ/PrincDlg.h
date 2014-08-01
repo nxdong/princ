@@ -9,8 +9,10 @@
 #include "ListDlg.h"
 #include "ShellDlg.h"
 #include "FileDlg.h"
-
+#include "IOCPServer.h"
 // CPrincDlg 对话框
+class CIOCPServer;
+struct ClientContext;
 class CPrincDlg : public CDialogEx
 {
 // 构造
@@ -38,7 +40,15 @@ public:
 	MyTabCtrl	 m_cTabCtrl;
 	ListDlg		 m_ListDlg;
 	ShellDlg	 m_ShellDlg;
-	FileDlg		 m_FileDlg;		
+	FileDlg		 m_FileDlg;	
+	CIOCPServer* m_ServerPrincDlg;
+	//CIOCPServer  m_Server;
+	void Activate(UINT nPort, UINT nMaxConnections);
 	afx_msg void OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	static void CALLBACK NotifyProc(LPVOID lpParam, ClientContext* pContext, UINT nCode);
+	static void ProcessReceiveComplete(ClientContext *pContext);
+	static void ProcessReceive(ClientContext *pContext);
+
+
 };
