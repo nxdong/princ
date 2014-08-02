@@ -32,3 +32,9 @@ END_MESSAGE_MAP()
 
 
 // FileDlg 消息处理程序
+
+
+void FileDlg::OnReceiveComplete(void)
+{
+	AfxMessageBox(_T("File OnReceiveComplete"));
+}

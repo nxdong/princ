@@ -29,7 +29,6 @@ void ListDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(ListDlg, CDialogEx)
 	ON_WM_SIZE()
-	ON_MESSAGE(WM_ADDTOLIST, OnAddToList)
 END_MESSAGE_MAP()
 
 
@@ -62,11 +61,15 @@ void ListDlg::OnSize(UINT nType, int cx, int cy)
 	m_cListCtrl.MoveWindow(&rect);
 	m_cListCtrl.changeWidth();
 }
-LRESULT ListDlg::OnAddToList(WPARAM wParam, LPARAM lParam)
+BOOL ListDlg::AddToList(ClientContext *pContext)
 {
-	ClientContext	*pContext = (ClientContext *)lParam;
-	
+	//ClientContext	*pContext = (ClientContext *)lParam;
 	m_cListCtrl.AddToList(pContext);
 	m_ComputerCount++;
+	return TRUE;
+}
+BOOL ListDlg::RemoveFromList(ClientContext *pContext)
+{
+	AfxMessageBox(_T("bbbbbb"));
 	return 0;
 }

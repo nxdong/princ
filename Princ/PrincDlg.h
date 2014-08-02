@@ -42,6 +42,7 @@ public:
 	ShellDlg	 m_ShellDlg;
 	FileDlg		 m_FileDlg;	
 	CIOCPServer* m_ServerPrincDlg;
+	CPrincDlg*   m_pPrincDlg;
 	//CIOCPServer  m_Server;
 	void Activate(UINT nPort, UINT nMaxConnections);
 	afx_msg void OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult);
@@ -49,6 +50,9 @@ public:
 	static void CALLBACK NotifyProc(LPVOID lpParam, ClientContext* pContext, UINT nCode);
 	static void ProcessReceiveComplete(ClientContext *pContext);
 	static void ProcessReceive(ClientContext *pContext);
+	afx_msg LRESULT OnAddToList(WPARAM, LPARAM);
+	afx_msg LRESULT OnRemoveFromList(WPARAM, LPARAM);
+
 
 
 };

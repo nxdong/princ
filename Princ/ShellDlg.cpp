@@ -32,3 +32,9 @@ END_MESSAGE_MAP()
 
 
 // ShellDlg 消息处理程序
+
+
+void ShellDlg::OnReceiveComplete(void)
+{
+	AfxMessageBox(_T("shell dlg OnReceiveComplete"));
+}
