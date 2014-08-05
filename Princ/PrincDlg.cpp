@@ -289,7 +289,30 @@ void CPrincDlg::Activate(UINT nPort, UINT nMaxConnections)
 
 void CPrincDlg::ProcessReceive(ClientContext *pContext)
 {
-	AfxMessageBox(_T("ProcessReceive called"));
+	if (pContext == NULL)
+		return;
+	// 如果管理对话框打开，交给相应的对话框处理
+	CDialog	*dlg = (CDialog	*)pContext->m_Dialog[1];
+
+	// 交给窗口处理
+	if (pContext->m_Dialog[0] > 0)
+	{
+		switch (pContext->m_Dialog[0])
+		{
+// 		case SCREENSPY_DLG:
+// 			((CScreenSpyDlg *)dlg)->OnReceive();
+// 			break;
+// 		case WEBCAM_DLG:
+// 			((CWebCamDlg *)dlg)->OnReceive();
+// 			break;
+// 		case AUDIO_DLG:
+// 			((CAudioDlg *)dlg)->OnReceive();
+// 			break;
+		default:
+			break;
+		}
+		return;
+	}
 	return;
 }
 

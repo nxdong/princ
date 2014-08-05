@@ -70,6 +70,34 @@ BOOL ListDlg::AddToList(ClientContext *pContext)
 }
 BOOL ListDlg::RemoveFromList(ClientContext *pContext)
 {
-	AfxMessageBox(_T("bbbbbb"));
+	if (pContext == NULL)
+		return -1;
+	// 删除链表过程中可能会删除Context
+	try
+	{
+		int nCnt = m_cListCtrl.GetItemCount();
+		for (int i=0; i < nCnt; i++)
+		{
+			if (pContext == (ClientContext *)m_cListCtrl.GetItemData(i))
+			{
+				m_cListCtrl.DeleteItem(i);
+				break;
+			}		
+		}
+
+		// 关闭相关窗口
+
+		switch (pContext->m_Dialog[0])
+		{
+		case FILEMANAGER_DLG:
+		case SHELL_DLG:
+			((CDialog*)pContext->m_Dialog[1])->SendMessage(WM_CLOSE);
+			/*((CDialog*)pContext->m_Dialog[1])->DestroyWindow();*/
+			break;
+		default:
+			break;
+		}
+	}catch(...){}
+
 	return 0;
 }

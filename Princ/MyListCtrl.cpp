@@ -11,12 +11,12 @@ typedef struct
 }COLUMNSTRUCT;
 COLUMNSTRUCT m_Column_Data[] = 
 {
-	{_T("ID")	 ,				0.05},
-	{_T("Wan/Lan"),				0.2	},
-	{_T("Hostname"),			0.15},
-	{_T("Version"),				0.2	},
-	{_T("Relay"),				0.1	},
-	{_T("Comment"),				0.3	},
+	{_T("ID")	 ,				0.05	},
+	{_T("Wan/Lan"),				0.15	},
+	{_T("Hostname"),			0.15	},
+	{_T("Version"),				0.35	},
+	{_T("Relay"),				0.1		},
+	{_T("Comment"),				0.2		},
 };
 // MyListCtrl
 
@@ -158,6 +158,5 @@ BOOL MyListCtrl::AddToList(ClientContext * pContext)
 		SetItemData(i, (DWORD) pContext);
 	}catch(...){}
 
-	m_nItemCount++;
 	return TRUE;
 }
