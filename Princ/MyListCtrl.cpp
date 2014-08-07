@@ -36,6 +36,8 @@ MyListCtrl::~MyListCtrl()
 
 
 BEGIN_MESSAGE_MAP(MyListCtrl, CListCtrl)
+	ON_WM_CONTEXTMENU()
+	ON_COMMAND(ID_LISTMENU_TEST, &MyListCtrl::OnListmenuTest)
 END_MESSAGE_MAP()
 
 
@@ -45,6 +47,11 @@ END_MESSAGE_MAP()
 
 BOOL MyListCtrl::init()
 {
+	DWORD dwStyle = GetExtendedStyle();
+	dwStyle |= LVS_EX_FULLROWSELECT;//选中某行使整行高亮（只适用与report风格的listctrl）
+	dwStyle |= LVS_EX_GRIDLINES;//网格线（只适用与report风格的listctrl）
+	SetExtendedStyle(dwStyle); //设置扩展风格
+	
 	CRect rect;
 	this->GetClientRect(&rect);
 	int width = rect.Width();
@@ -159,4 +166,43 @@ BOOL MyListCtrl::AddToList(ClientContext * pContext)
 	}catch(...){}
 
 	return TRUE;
+}
+
+void MyListCtrl::OnContextMenu(CWnd* pWnd, CPoint point)
+{
+	// TODO: 在此处添加消息处理程序代码
+	HWND hWnd = AfxGetMainWnd()->m_hWnd;
+	CWnd* pCWnd = FromHandle(hWnd);
+	if (GetSelectedCount() <= 0)
+	{
+		CMenu menu;
+		CMenu* pPopup;
+		menu.LoadMenu (IDR_LISTMENU);
+		pPopup = menu.GetSubMenu(0);
+		ASSERT(pPopup != NULL);	
+		pPopup->EnableMenuItem(ID_LISTMENU_SHELL,MF_GRAYED);
+		pPopup->EnableMenuItem(ID_LISTMENU_FILEMANAGER,MF_GRAYED);
+		pPopup->EnableMenuItem(ID_LISTMENU_DISCONNECT,MF_GRAYED);
+
+		pPopup->TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, 
+			point.x, point.y, pCWnd);	
+		return;
+	}
+	CMenu menu;
+	CMenu* pPopup;
+	menu.LoadMenu (IDR_LISTMENU);
+	pPopup = menu.GetSubMenu(0);
+	ASSERT(pPopup != NULL);	
+	pPopup->EnableMenuItem(ID_LISTMENU_SHELL,MF_ENABLED);
+	pPopup->EnableMenuItem(ID_LISTMENU_FILEMANAGER,MF_ENABLED);
+	pPopup->EnableMenuItem(ID_LISTMENU_DISCONNECT,MF_ENABLED);
+	pPopup->TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, 
+		point.x, point.y, pCWnd);	
+}
+
+
+void MyListCtrl::OnListmenuTest()
+{
+	AfxMessageBox(_T("Test"));
+	// TODO: 在此添加命令处理程序代码
 }

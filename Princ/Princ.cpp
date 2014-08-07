@@ -15,6 +15,7 @@
 
 BEGIN_MESSAGE_MAP(CPrincApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
+	ON_COMMAND(ID_LISTMENU_FILEMANAGER, &CPrincApp::OnListmenuFilemanager)
 END_MESSAGE_MAP()
 
 
@@ -92,3 +93,10 @@ BOOL CPrincApp::InitInstance()
 	return FALSE;
 }
 
+
+
+void CPrincApp::OnListmenuFilemanager()
+{
+	AfxMessageBox(_T("sssssss"));
+	// TODO: 在此添加命令处理程序代码
+}

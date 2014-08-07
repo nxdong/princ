@@ -16,10 +16,13 @@ public:
 protected:
 	DECLARE_MESSAGE_MAP()
 public:
+	
 	int  m_nItemCount;					// the count of items
 	BOOL init();					    // initialize the list . column set
 	BOOL changeWidth(void);				// called when need redraw 
 	BOOL AddToList(ClientContext* pContext);	// add promote computer info to list
+	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
+	afx_msg void OnListmenuTest();
 };
 
 
